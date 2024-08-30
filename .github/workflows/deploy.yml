@@ -4,10 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  container-name: my-app
-  cluster: my-app-cluster
-  service: my-app-service
-  task-definition: task-definition.json
+  CONTAINER_NAME: my-app
 
 jobs:
   build:
@@ -28,10 +25,6 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v2
 
-    - name: Get Git commit hash
-      id: git-commit
-      run: echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
 
@@ -39,9 +32,9 @@ jobs:
       id: build-image
       run: |
         # Define ECR image name and tags
-        IMAGE_URI="${{ steps.login-ecr.outputs.registry }}/${{ env.container-name }}"
+        IMAGE_URI="${{ steps.login-ecr.outputs.registry }}/${{ env.CONTAINER_NAME }}"
         LATEST_TAG="${IMAGE_URI}:latest"
-        COMMIT_TAG="${IMAGE_URI}:${{ env.COMMIT_HASH }}"
+        COMMIT_TAG="${IMAGE_URI}:${{ github.sha }}"
         
         # Build and push the Docker image with both tags
         docker buildx build --platform linux/amd64 --push -t $LATEST_TAG -t $COMMIT_TAG .
@@ -74,8 +67,8 @@ jobs:
       working-directory: ./terraform
       run: |
         terraform init
-        terraform plan -var "commit_hash=${{ env.COMMIT_HASH }}"
+        terraform plan -var "commit_hash=${{ github.sha }}"
 
     - name: Apply Terraform changes
       working-directory: ./terraform
-      run: terraform apply -auto-approve -var "commit_hash=${{ env.COMMIT_HASH }}"
+      run: terraform apply -auto-approve -var "commit_hash=${{ github.sha }}"
