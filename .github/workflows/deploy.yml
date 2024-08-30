@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
 
 env:
-  container-name: ${{ secrets.ECS_CONTAINER_NAME }}
-  cluster: ${{ secrets.ECS_CLUSTER_NAME }}
-  service: ${{ secrets.ECS_SERVICE_NAME }}
-  task-definition: ${{ secrets.ECS_TASK_DEFINITION }}
+  container-name: my-app
+  cluster: my-app-cluster
+  service: my-app-service
+  task-definition: my-app-task
 
 jobs:
   build:
@@ -53,3 +53,7 @@ jobs:
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
         image: ${{ env.IMAGE_URI }}
+        container-name: ${{ env.container-name }}
+        cluster: ${{ env.cluster }}
+        service: ${{ env.service }}
+        task-definition: ${{ env.task-definition }}
