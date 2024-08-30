@@ -1,9 +1,7 @@
 name: Build and Deploy to AWS ECS Fargate
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   build:
