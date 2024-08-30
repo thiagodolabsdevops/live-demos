@@ -47,21 +47,21 @@ resource "aws_security_group" "sg" {
   }
 
   tags = {
-    Name = "ecs-sg-${var.app_name}"
+    Name = "ecs-sg-${var.container_name}"
   }
 }
 
 resource "aws_ecs_cluster" "main" {
-  name = "${var.app_name}-cluster"
+  name = "${var.container_name}-cluster"
 }
 
 # Create the ECR repository
 resource "aws_ecr_repository" "repo" {
-  name = "${var.app_name}"
+  name = "${var.container_name}"
 }
 
 resource "aws_ecs_task_definition" "task" {
-  family                   = "${var.app_name}-task"
+  family                   = "${var.container_name}-task"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   execution_role_arn       = data.aws_iam_role.ecs_task_execution_role.arn
@@ -69,7 +69,7 @@ resource "aws_ecs_task_definition" "task" {
   memory                   = "512"
 
   container_definitions = jsonencode([{
-    name      = "${var.app_name}"
+    name      = "${var.container_name}"
     image     = "${aws_ecr_repository.repo.repository_url}:latest"
     essential = true
     portMappings = [{
@@ -89,7 +89,7 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_policy" {
 }
 
 resource "aws_ecs_service" "service" {
-  name            = "${var.app_name}-service"
+  name            = "${var.container_name}-service"
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.task.arn
   desired_count   = 1
