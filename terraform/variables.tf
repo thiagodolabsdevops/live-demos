@@ -5,3 +5,7 @@ variable "region" {
 variable "container_name" {
   default = "my-app"
 }
+
+variable "commit_hash" {
+  default = "latest"
+}

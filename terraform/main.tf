@@ -70,7 +70,7 @@ resource "aws_ecs_task_definition" "task" {
 
   container_definitions = jsonencode([{
     name      = "${var.container_name}"
-    image     = "${aws_ecr_repository.repo.repository_url}:latest"
+    image     = "${aws_ecr_repository.repo.repository_url}:${var.commit_hash}"
     essential = true
     portMappings = [{
       containerPort = 80
