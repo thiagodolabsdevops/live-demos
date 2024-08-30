@@ -55,6 +55,12 @@ jobs:
     needs: build
     
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: List directory contents
+      run: ls -la terraform
+
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v2
       with:
