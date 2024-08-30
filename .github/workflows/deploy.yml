@@ -61,11 +61,11 @@ jobs:
         terraform_version: 1.9.4
 
     - name: Plan Terraform changes
-      working-directory: terraform
+      working-directory: ./terraform
       run: |
         terraform init
         terraform plan -var "commit_hash=${{ env.COMMIT_HASH }}"
 
     - name: Apply Terraform changes
-      working-directory: terraform
+      working-directory: ./terraform
       run: terraform apply -auto-approve -var "commit_hash=${{ env.COMMIT_HASH }}"
